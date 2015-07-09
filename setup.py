@@ -4,16 +4,16 @@ except ImportError:
     from distutils.core import setup
 
 config = {
-    'description': 'My Project',
-    'author': 'My Name',
-    'url': 'URL to get it at.',
-    'download_url': 'Where to download it.',
-    'author_email': 'My email.',
+    'description': 'mahnobPlayer is a mediaplayer designed for the "Mahnob-db hci-tagging" database (http://mahnob-db.eu/hci-tagging/)',
+    'author': 'Simone Castellani',
+    'url': 'https://bitbucket.org/sfrullo/mahnobplayer',
+    'download_url': 'https://bitbucket.org/sfrullo/mahnobplayer',
+    'author_email': 'mail@simonecastellani.com',
     'version': '0.1',
     'install_requires': ['nose'],
-    'packages': ['NAME'],
+    'packages': ['mahnobplayer'],
     'scripts': [],
-    'name': 'projectname'
+    'name': 'mahnobplayer'
 }
 
 setup(**config)
