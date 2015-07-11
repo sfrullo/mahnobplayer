@@ -79,10 +79,7 @@ class BasicWindow(tk.Toplevel):
 
     def __init__(self, parent, *args, **kwargs):
         tk.Toplevel.__init__(self, parent, *args, **kwargs)
-        self.parent = parent
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-        
+        self.__parent = parent
         
     def getGridSize(self):
         return self.size()
@@ -104,6 +101,9 @@ class BasicWindow(tk.Toplevel):
     
     def setMenu(self, menu):
         self.config(menu=menu)
+        
+    def getParent(self): 
+        return self.__parent
 
 
 
@@ -113,9 +113,9 @@ class BasicFrame(tk.Frame):
 
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
-        self.parent = parent
+        self.__parent = parent
  
-    def getGridSize(self):
+    def getSize(self):
         return self.size()
     
     def getWidth(self):
@@ -129,14 +129,12 @@ class BasicFrame(tk.Frame):
     
     def setHeight(self, value):
         self.config(height = value)
-        
-    def getXid(self):
-        return self.winfo_id()
+    
+    def getParent(self):
+        return self.__parent
     
     def setMenu(self, menu):
-        self.config(menu=menu)
-        
-
+        self.__parent.config(menu=menu)
 
 #-------------------------------------------------------------------------------
 # MAIN
