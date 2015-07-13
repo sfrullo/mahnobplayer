@@ -5,8 +5,10 @@ Created on 10 Jul 2015
 '''
 
 import tkinter as tk
+from tkinter.filedialog import askopenfilenames
 
 from mahnobplayer.gui import basic
+from mahnobplayer.gui import videoframe
 
 class CamViewer(basic.BasicWindow):
     ''' CamViewer class implements the CamViewer GUI.
@@ -24,8 +26,7 @@ class CamViewer(basic.BasicWindow):
             [
                 "_File", (
                     ("_New", "Control-n", self.dummy),
-                    ("_Open...", "Control-o", self.dummy),
-                    ("_Save", "Control-s", self.dummy),
+                    ("_Add Video", "Control-o", self.on_add_video),
                     (), # Add a separator here
                     ("_Exit","Alt-F4", self.on_quit),
                 ),
@@ -51,7 +52,11 @@ class CamViewer(basic.BasicWindow):
         menu.addSubMenu(menudata)
         self.setMenu(menu)
         
-        self.frames = dict(zip(range(6), [basic.BasicFrame(self) for c in range(6)]))
+        
+        self.medialist = [(),(),()]
+        
+        
+        self.frames = dict(zip(range(6), [videoframe.selectableVideoFrame(self, self.medialist) for c in range(6)]))
         index = [(0,0),(1,0),(2,0),
                  (0,1),(1,1),(2,1)]
         #configure column/row to get resizeble frames
@@ -61,9 +66,11 @@ class CamViewer(basic.BasicWindow):
 
         color = ['white', 'red', 'green', 'blue', 'cyan', 'yellow']
         for i, f in self.frames.items():
-            f.config(bg=color[i], width=200, height=200, padx=30, pady=30)
+            f.config(bg=color[i], padx=30, pady=30)
             f.rowconfigure(0, weight=1)
             f.columnconfigure(0, weight=1)
+            f.setVideoFrameHeight(200)
+            f.setVideoFrameWidth(200)
             f.grid(column=index[i][0], row=index[i][1])
         print(self.frames)
         
@@ -74,9 +81,11 @@ class CamViewer(basic.BasicWindow):
         self.quit()
 
 
+    def on_add_video(self):
+        fileSelected = askopenfilenames()
+
     def dummy(self):
         pass
-
 
 
 if __name__ == '__main__':

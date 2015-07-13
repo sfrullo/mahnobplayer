@@ -20,17 +20,17 @@ class VideoFrame(BasicFrame):
 
 class selectableVideoFrame(BasicFrame):
     
-    def __init__(self, parent, playlist, *args, **kwarg):
+    def __init__(self, parent, medialist, *args, **kwarg):
         BasicFrame.__init__(self, parent, *args, **kwarg)
-        self.__playlist = playlist
+        self.__medialist = medialist
         
         self.__videoframe = VideoFrame(self, bg='white')
         self.__videoframe.grid(column=0,row=0, sticky='nesw')
         
         self.__selection = tk.StringVar()
-        self.__selection.set(self.__playlist[0])
-        b = tk.OptionMenu(self, self.__selection, *self.__playlist, command=self.on_select)
-        b.config(relief=tk.GROOVE, bg='white', cursor=None)
+        self.__selection.set(self.__medialist[0])
+        b = tk.OptionMenu(self, self.__selection, *self.__medialist, command=self.on_select)
+        b.config(relief=tk.GROOVE, cursor=None)
         b.grid(column=0,row=1, sticky='nesw')
         
         self.grid()
@@ -51,12 +51,16 @@ class selectableVideoFrame(BasicFrame):
     def getVideoFrameHeight(self):
         return self.__videoframe.getHeight()
     
+    def getXid(self):
+        return self.__videoframe.getXid()
+    
     #---------------------------------------------------------------------------
     # Callbacks
     #---------------------------------------------------------------------------
     
     def on_select(self, value):
-        print(value)
+        print(value, 'video selected')
+        self.parent.on_video_selection(self, value)
     
 if __name__ == '__main__':
     
