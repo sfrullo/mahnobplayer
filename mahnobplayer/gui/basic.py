@@ -80,6 +80,7 @@ class BasicWindow(tk.Toplevel):
     def __init__(self, parent, *args, **kwargs):
         tk.Toplevel.__init__(self, parent, *args, **kwargs)
         self.__parent = parent
+        self.grid()
         
     def getGridSize(self):
         return self.size()
@@ -104,6 +105,12 @@ class BasicWindow(tk.Toplevel):
         
     def getParent(self): 
         return self.__parent
+    
+    def makeSelfStretchable(self):
+        for c in range(self.getGridSize()[0]):
+            self.columnconfigure(c, weight=1)
+        for r in range(self.getGridSize()[1]):
+            self.rowconfigure(r, weight=1)
 
 
 
@@ -114,8 +121,19 @@ class BasicFrame(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.__parent = parent
+        
+        # set column and row property for get the gui items stretchable
+        self.top = self.winfo_toplevel()
+        self.top.columnconfigure(0, weight=1)
+        self.top.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)        
+        
+        # set grid to expand inner items as max as possible, 
+        # this may be re-set to different value in complex gui
+        self.grid(sticky='nesw')
  
-    def getSize(self):
+    def getGridSize(self):
         return self.size()
     
     def getWidth(self):
@@ -135,6 +153,13 @@ class BasicFrame(tk.Frame):
     
     def setMenu(self, menu):
         self.__parent.config(menu=menu)
+        
+    def makeSelfStretchable(self):
+        print(self, 'do makeSelfStretchable')
+        for c in range(self.getGridSize()[0]):
+            self.columnconfigure(c, weight=1)
+        for r in range(self.getGridSize()[1]):
+            self.rowconfigure(r, weight=1)
 
 #-------------------------------------------------------------------------------
 # MAIN

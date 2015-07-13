@@ -23,19 +23,18 @@ class MediaControl(BasicFrame):
         '''
         BasicFrame.__init__(self, parent, *args, **kwarg)
         self.__controller = controller
-        self.grid()
         
         FILEDIR = path.split(__file__)[0]
         icons = {}
         for icon in listdir(path=path.join(FILEDIR,'etc')):
             name = icon.split('.')[0]
             image = Image.open(path.join(FILEDIR,'etc',icon))
-            icons[name] = ImageTk.PhotoImage(image.resize((30, 30), Image.ANTIALIAS))
+            icons[name] = ImageTk.PhotoImage(image.resize((15, 15), Image.ANTIALIAS))
             
         
         self.buttoncontainer = BasicFrame(self, padx=5, pady=5)
-        btopt = { 'width' : 30,
-                  'height' : 30,
+        btopt = { 'width' : 20,
+                  'height' : 20,
                   'relief' : 'groove'}
         for index, name in enumerate(['rew', 'stop', 'play', 'pause', 'ffw']):
             bt = tk.Button(self.buttoncontainer, btopt, image=icons[name], command=getattr(self, 'on_' + name))
@@ -45,17 +44,17 @@ class MediaControl(BasicFrame):
         self.buttoncontainer.grid(column = 0, row=1, sticky='w')
             
         
-        self.progresbarconainer = BasicFrame(self, padx=5, pady=5)
-        self.progresbarconainer.grid(column=0,row=0, sticky='w')
+        self.progresbarconainer = BasicFrame(self, padx=5)
+        self.progresbarconainer.grid(column=0,row=0, sticky='ew')
         self.progressvar = tk.DoubleVar()
         self.progressvar.set(.0)
-        self.progresbar = ttk.Progressbar(self.progresbarconainer, 
-                                          length = 500, 
-                                          mode='determinate', 
+        self.progressbar = ttk.Scale(self.progresbarconainer, 
+                                          length = 300,
+                                          #mode='determinate', 
                                           orient = tk.HORIZONTAL, 
                                           variable = self.progressvar, 
-                                          maximum = 1.0)
-        self.progresbar.grid(column = 0, columnspan=6, row=1, sticky = 'nsew')
+                                          to = 1.0)
+        self.progressbar.grid(column = 0, columnspan=6, row=1, sticky = 'ew')
     
     #---------------------------------------------------------------------------
     # Callbacks
@@ -89,5 +88,5 @@ if __name__ == '__main__':
     root = tk.Tk()
     
     m = MediaControl(root, None)
-    
+    m.update_progressbar(.65)
     root.mainloop()

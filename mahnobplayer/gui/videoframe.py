@@ -22,20 +22,20 @@ class selectableVideoFrame(BasicFrame):
     
     def __init__(self, parent, medialist, *args, **kwarg):
         BasicFrame.__init__(self, parent, *args, **kwarg)
-        self.__medialist = medialist
+        self.__medialist = medialist if len(medialist) > 0 else ['empty']
         
-        self.__videoframe = VideoFrame(self, bg='white')
+        self.__videoframe = VideoFrame(self, bg='white', padx=0, pady=0)
         self.__videoframe.grid(column=0,row=0, sticky='nesw')
         
-        self.__selection = tk.StringVar()
-        self.__selection.set(self.__medialist[0])
-        b = tk.OptionMenu(self, self.__selection, *self.__medialist, command=self.on_select)
-        b.config(relief=tk.GROOVE, cursor=None)
-        b.grid(column=0,row=1, sticky='nesw')
+        self.__selectionvar = tk.StringVar()
+        self.__selectionvar.set(self.__medialist[0])
+        self.__selectionlist = tk.OptionMenu(self, self.__selectionvar, *self.__medialist, command=self.on_select)
+        self.__selectionlist.config(height=0, relief=tk.GROOVE)
+        self.__selectionlist.grid(column=0,row=1, sticky='ew')
         
-        self.grid()
-        
-        
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+
     def getCurrentSelection(self):
         return self.__selection.get()
     
