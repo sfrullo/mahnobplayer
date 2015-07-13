@@ -11,8 +11,7 @@ from tkinter.filedialog import askopenfilenames
 from mahnobplayer.gui import basic
 from mahnobplayer.gui import videoframe
 from mahnobplayer.gui import mediacontrol
-from logging import root
-import random
+from os import path
 
 class CamViewer(basic.BasicFrame):
     ''' CamViewer class implements the CamViewer GUI.
@@ -25,7 +24,7 @@ class CamViewer(basic.BasicFrame):
         ''' Init Function for the CamViewer class '''
         basic.BasicFrame.__init__(self, parent, *args, **kwargs)
         self.__controller = controller
-        self.medialist = []
+        self.medialist = ()
         
         self.createMenu()
         
@@ -88,8 +87,12 @@ class CamViewer(basic.BasicFrame):
         self.quit()
         
     def on_add_video(self):
-        fileSelected = askopenfilenames()
-        self.medialist.add(fileSelected)
+        fileSelected = askopenfilenames(title='select video(s)..', initialdir=path.split(__file__)[0:1], parent=self, multiple=True)
+        self.medialist += fileSelected
+        print(self.medialist)
+        for f in self.frames.values():
+            print('change media list for: ', f)
+            f.updateMediaList(self.medialist)
         
     def on_new(self):
         pass

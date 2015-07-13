@@ -6,6 +6,7 @@ Created on 11 Jul 2015
 
 
 import tkinter as tk
+from os import path
 
 from mahnobplayer.gui.basic import BasicFrame
     
@@ -22,15 +23,15 @@ class selectableVideoFrame(BasicFrame):
     
     def __init__(self, parent, medialist, *args, **kwarg):
         BasicFrame.__init__(self, parent, *args, **kwarg)
-        self.__medialist = medialist if len(medialist) > 0 else ['empty']
+        self.__medialist = medialist if len(medialist) > 0 else ['---']
         
         self.__videoframe = VideoFrame(self, bg='white', padx=0, pady=0)
         self.__videoframe.grid(column=0,row=0, sticky='nesw')
         
-        self.__selectionvar = tk.StringVar()
-        self.__selectionvar.set(self.__medialist[0])
-        self.__selectionlist = tk.OptionMenu(self, self.__selectionvar, *self.__medialist, command=self.on_select)
-        self.__selectionlist.config(height=0, relief=tk.GROOVE)
+        self.selectionvar = tk.StringVar()
+        self.selectionvar.set(self.__medialist[0])
+        self.__selectionlist = tk.OptionMenu(self, self.selectionvar, *self.__medialist, command=lambda x:self.on_select(x))
+        self.__selectionlist.config(relief=tk.GROOVE)
         self.__selectionlist.grid(column=0,row=1, sticky='ew')
         
         self.columnconfigure(0, weight=1)
@@ -54,13 +55,19 @@ class selectableVideoFrame(BasicFrame):
     def getXid(self):
         return self.__videoframe.getXid()
     
+    def updateMediaList(self, medialist):
+        self.__medialist = medialist
+        menu = self.__selectionlist.children['menu']
+        menu.delete(1, 'end')
+        for value in medialist:
+            menu.add_command(label=path.basename(value), command=lambda v=value: self.selectionvar.set(v) )
+            
     #---------------------------------------------------------------------------
     # Callbacks
     #---------------------------------------------------------------------------
     
-    def on_select(self, value):
-        print(value, 'video selected')
-        self.parent.on_video_selection(self, value)
+    def on_select(self):
+        print(self.selectionvar.get(), 'video selected')
     
 if __name__ == '__main__':
     
