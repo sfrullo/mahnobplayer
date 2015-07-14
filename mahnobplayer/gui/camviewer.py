@@ -102,12 +102,19 @@ class CamViewer(basic.BasicFrame):
         print('fileselected:', fileSelected)
         self.medialist += fileSelected
         print(self.medialist)
+        
+        # if a file was selected than update gui media list
         if fileSelected != ():
             for f in self.frames.values():
                 print('change media list for: ', f)
                 f.updateMediaList(self.medialist)
+                
+            # and notify the changes to controller
+            
+            self.__controller.on_media_added(self, medialist=self.medialist)
 
-        
+    def on_selection(self, videoframe, selection):
+        print(selection, ' selected for ', videoframe)
         
     def on_new(self):
         pass

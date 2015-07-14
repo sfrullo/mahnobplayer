@@ -73,6 +73,8 @@ class selectableVideoFrame(BasicFrame):
     #---------------------------------------------------------------------------
     def on_select(self, selection):
         print(selection, 'video selected')
+        # notify the parent that a video was selected
+        self.getParent().getParent().on_selection(self, selection)
     
 if __name__ == '__main__':
     

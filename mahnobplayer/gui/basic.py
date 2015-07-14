@@ -105,13 +105,6 @@ class BasicWindow(tk.Toplevel):
         
     def getParent(self): 
         return self.__parent
-    
-    def makeSelfStretchable(self):
-        for c in range(self.getGridSize()[0]):
-            self.columnconfigure(c, weight=1)
-        for r in range(self.getGridSize()[1]):
-            self.rowconfigure(r, weight=1)
-
 
 
 class BasicFrame(tk.Frame):
@@ -153,13 +146,6 @@ class BasicFrame(tk.Frame):
     
     def setMenu(self, menu):
         self.__parent.config(menu=menu)
-        
-    def makeSelfStretchable(self):
-        print(self, 'do makeSelfStretchable')
-        for c in range(self.getGridSize()[0]):
-            self.columnconfigure(c, weight=1)
-        for r in range(self.getGridSize()[1]):
-            self.rowconfigure(r, weight=1)
 
 #-------------------------------------------------------------------------------
 # MAIN
