@@ -31,8 +31,8 @@ class CamViewer(basic.BasicFrame):
         self.videoframecontainer = basic.BasicFrame(self)
         self.videoframecontainer.config(padx=10)
         self.frames = dict(zip(range(6), [videoframe.selectableVideoFrame(self.videoframecontainer, self.medialist) for c in range(6)]))
-        index = [(0,0),(1,0),(2,0),
-                 (0,1),(1,1),(2,1)]
+        index = [(0, 0), (1, 0), (2, 0),
+                 (0, 1), (1, 1), (2, 1)]
         
         color = ['magenta', 'red', 'green', 'blue', 'cyan', 'yellow']
         for i, f in self.frames.items():
@@ -44,7 +44,7 @@ class CamViewer(basic.BasicFrame):
             self.videoframecontainer.columnconfigure(index[i][0], weight=1)
             self.videoframecontainer.rowconfigure(index[i][1], weight=1)
         # grid videoframecontainer to fit all space as possible over all direction
-        self.videoframecontainer.grid(column=0,row=0, sticky='nesw')
+        self.videoframecontainer.grid(column=0, row=0, sticky='nesw')
         
         
         self.mediacontrollercontainer = basic.BasicFrame(self)
@@ -52,7 +52,7 @@ class CamViewer(basic.BasicFrame):
         self.mediacontroller = mediacontrol.MediaControl(self.mediacontrollercontainer, self.__controller)
         # grid mediacontrollercontainer to be on the bottom and 
         # fit all space as possible over left-right direction only
-        self.mediacontrollercontainer.grid(column=0,row=2, ipady=5,sticky='sew')
+        self.mediacontrollercontainer.grid(column=0, row=2, ipady=5, sticky='sew')
         
     
     def createMenu(self):
@@ -63,14 +63,14 @@ class CamViewer(basic.BasicFrame):
                 "_File", (
                     ("_New", "Control-n", self.on_new),
                     ("_Add Video", "Control-o", self.on_add_video),
-                    (), # Add a separator here
-                    ("_Exit","Alt-F4", self.on_quit),
+                    (),  # Add a separator here
+                    ("_Exit", "Alt-F4", self.on_quit),
                 ),
             ],
             [
                 "_Help", (
                     ("_Help", "F1", self.dummy),
-                    (), # Add a separator here
+                    (),  # Add a separator here
                     ("_About", "", self.dummy),
                 )
             ],
@@ -87,12 +87,27 @@ class CamViewer(basic.BasicFrame):
         self.quit()
         
     def on_add_video(self):
-        fileSelected = askopenfilenames(title='select video(s)..', initialdir=path.split(__file__)[0:1], parent=self, multiple=True)
+        options = {}
+        options['parent'] = self
+        options['title'] = 'Add Video(s)'
+        options['initialdir'] = path.split(__file__)[0]
+        # options['initialdir'] = path.join(path.sep, __file__.split(path.sep)[0])
+        options['filetypes'] = [('video files', '*.avi'), 
+                                ('video files', '*.mpeg'),
+                                ('all files', '.*')]
+        options['multiple'] = True
+        
+        fileSelected = askopenfilenames(**options)
+        
+        print('fileselected:', fileSelected)
         self.medialist += fileSelected
         print(self.medialist)
-        for f in self.frames.values():
-            print('change media list for: ', f)
-            f.updateMediaList(self.medialist)
+        if fileSelected != ():
+            for f in self.frames.values():
+                print('change media list for: ', f)
+                f.updateMediaList(self.medialist)
+
+        
         
     def on_new(self):
         pass

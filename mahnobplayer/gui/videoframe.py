@@ -28,17 +28,21 @@ class selectableVideoFrame(BasicFrame):
         self.__videoframe = VideoFrame(self, bg='white', padx=0, pady=0)
         self.__videoframe.grid(column=0,row=0, sticky='nesw')
         
-        self.selectionvar = tk.StringVar()
+        class FormattedTkStringVar(tk.StringVar):
+            def __init__(self, master=None, value=None, name=None):
+                tk.StringVar.__init__(self, master, value, name)
+        
+        self.selectionvar = FormattedTkStringVar()
         self.selectionvar.set(self.__medialist[0])
-        self.__selectionlist = tk.OptionMenu(self, self.selectionvar, *self.__medialist, command=lambda x:self.on_select(x))
-        self.__selectionlist.config(relief=tk.GROOVE)
+        self.__selectionlist = tk.OptionMenu(self, self.selectionvar, *self.__medialist, command=self.on_select)
+        self.__selectionlist.config(relief=tk.GROOVE, indicatoron=0)
         self.__selectionlist.grid(column=0,row=1, sticky='ew')
         
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
     def getCurrentSelection(self):
-        return self.__selection.get()
+        return self.selectionvar.get()
     
     def setVideoFrameWidth(self, width):
         self.__videoframe.setWidth(width)
@@ -58,16 +62,17 @@ class selectableVideoFrame(BasicFrame):
     def updateMediaList(self, medialist):
         self.__medialist = medialist
         menu = self.__selectionlist.children['menu']
-        menu.delete(1, 'end')
-        for value in medialist:
-            menu.add_command(label=path.basename(value), command=lambda v=value: self.selectionvar.set(v) )
-            
+        menu.delete(0, 'end')
+        menu.add_command(label='---', command=tk._setit(self.selectionvar, '---', self.on_select))
+        for v in medialist:
+            menu.add_command(label=path.basename(v), 
+                             command=tk._setit(self.selectionvar, v, self.on_select))
+        
     #---------------------------------------------------------------------------
     # Callbacks
     #---------------------------------------------------------------------------
-    
-    def on_select(self):
-        print(self.selectionvar.get(), 'video selected')
+    def on_select(self, selection):
+        print(selection, 'video selected')
     
 if __name__ == '__main__':
     
