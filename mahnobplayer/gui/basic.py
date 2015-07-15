@@ -144,6 +144,9 @@ class BasicFrame(tk.Frame):
     def getParent(self):
         return self.__parent
     
+    def setParent(self, newp):
+        self.__parent = newp
+    
     def setMenu(self, menu):
         self.__parent.config(menu=menu)
 

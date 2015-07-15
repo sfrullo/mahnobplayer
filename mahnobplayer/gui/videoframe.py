@@ -23,7 +23,7 @@ class selectableVideoFrame(BasicFrame):
     
     def __init__(self, parent, medialist, *args, **kwarg):
         BasicFrame.__init__(self, parent, *args, **kwarg)
-        self.__medialist = medialist if len(medialist) > 0 else ['---']
+        self.__medialist = ['---'] + medialist if len(medialist) > 0 else ['---']
         
         self.__videoframe = VideoFrame(self, bg='white', padx=0, pady=0)
         self.__videoframe.grid(column=0,row=0, sticky='nesw')
@@ -74,7 +74,7 @@ class selectableVideoFrame(BasicFrame):
     def on_select(self, selection):
         print(selection, 'video selected')
         # notify the parent that a video was selected
-        self.getParent().getParent().on_selection(self, selection)
+        self.getParent().on_selection(self, selection)
     
 if __name__ == '__main__':
     

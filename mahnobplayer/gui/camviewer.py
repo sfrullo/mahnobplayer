@@ -7,11 +7,11 @@ Created on 10 Jul 2015
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter.filedialog import askopenfilenames
+from os import path
 
 from mahnobplayer.gui import basic
 from mahnobplayer.gui import videoframe
 from mahnobplayer.gui import mediacontrol
-from os import path
 
 class CamViewer(basic.BasicFrame):
     ''' CamViewer class implements the CamViewer GUI.
@@ -24,35 +24,37 @@ class CamViewer(basic.BasicFrame):
         ''' Init Function for the CamViewer class '''
         basic.BasicFrame.__init__(self, parent, *args, **kwargs)
         self.__controller = controller
-        self.medialist = ()
+        self.medialist = []
         
         self.createMenu()
+        self.createVideoFrames(parent=self, medialist=self.medialist, nframes=6)
+        self.createMediaController()
         
-        self.videoframecontainer = basic.BasicFrame(self)
-        self.videoframecontainer.config(padx=10)
-        self.frames = dict(zip(range(6), [videoframe.selectableVideoFrame(self.videoframecontainer, self.medialist) for c in range(6)]))
-        index = [(0, 0), (1, 0), (2, 0),
-                 (0, 1), (1, 1), (2, 1)]
-        
-        color = ['magenta', 'red', 'green', 'blue', 'cyan', 'yellow']
+    def createVideoFrames(self, parent=None, medialist=(), nframes=0):
+        videoframecontainer = basic.BasicFrame(parent)
+        videoframecontainer.config(padx=10)
+        self.frames = dict(zip(range(nframes), [videoframe.selectableVideoFrame(parent, medialist) for c in range(nframes)]))
+        #index = [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1)]
+        index = list(zip([x%3 for x in range(nframes)], [int(x/3) for x in range(nframes)]))
         for i, f in self.frames.items():
             f.config(padx=1, pady=1, bg='#555')
             f.setVideoFrameHeight(200)
             f.setVideoFrameWidth(200)
-            f.grid(column=index[i][0], row=index[i][1])
+            # grid each videoframes and set "in_" property to put frames in videoframecontainer
+            f.grid(column=index[i][0], row=index[i][1], in_=videoframecontainer)
             # set properties of each of the six column (and rows) to be stretchable
-            self.videoframecontainer.columnconfigure(index[i][0], weight=1)
-            self.videoframecontainer.rowconfigure(index[i][1], weight=1)
+            videoframecontainer.columnconfigure(index[i][0], weight=1)
+            videoframecontainer.rowconfigure(index[i][1], weight=1)
         # grid videoframecontainer to fit all space as possible over all direction
-        self.videoframecontainer.grid(column=0, row=0, sticky='nesw')
+        videoframecontainer.grid(column=0, row=0, sticky='nesw')
         
-        
-        self.mediacontrollercontainer = basic.BasicFrame(self)
-        self.mediacontrollercontainer.config(padx=10)
-        self.mediacontroller = mediacontrol.MediaControl(self.mediacontrollercontainer, self.__controller)
+    def createMediaController(self):
+        mediacontrollercontainer = basic.BasicFrame(self)
+        mediacontrollercontainer.config(padx=10)
+        self.mediacontroller = mediacontrol.MediaControl(mediacontrollercontainer, self.__controller)
         # grid mediacontrollercontainer to be on the bottom and 
-        # fit all space as possible over left-right direction only
-        self.mediacontrollercontainer.grid(column=0, row=2, ipady=5, sticky='sew')
+        # fit as much space as possible over left-right direction only
+        mediacontrollercontainer.grid(column=0, row=2, ipady=5, sticky='sew')
         
     
     def createMenu(self):
@@ -110,14 +112,18 @@ class CamViewer(basic.BasicFrame):
                 f.updateMediaList(self.medialist)
                 
             # and notify the changes to controller
-            
             self.__controller.on_media_added(self, medialist=self.medialist)
 
     def on_selection(self, videoframe, selection):
         print(selection, ' selected for ', videoframe)
+        # notify the controller about the selection
+        self.__controller.on_selection(self, videoframe, selection)
         
     def on_new(self):
-        pass
+        newwind = basic.BasicWindow(self)
+        # add hook for on_selection callbacks
+        newwind.__dict__['on_selection'] = self.on_selection
+        newframes = self.createVideoFrames(parent=newwind, medialist=self.medialist, nframes=6)
         
     def dummy(self):
         pass
