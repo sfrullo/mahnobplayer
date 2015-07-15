@@ -112,7 +112,7 @@ class CamViewer(basic.BasicFrame):
                 f.updateMediaList(self.medialist)
                 
             # and notify the changes to controller
-            self.__controller.on_media_added(self, medialist=self.medialist)
+            self.__controller.on_media_added(self, fileSelected)
 
     def on_selection(self, videoframe, selection):
         print(selection, ' selected for ', videoframe)

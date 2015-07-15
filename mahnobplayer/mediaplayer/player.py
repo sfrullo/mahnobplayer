@@ -3,7 +3,7 @@ os.environ["GST_DEBUG_DUMP_DOT_DIR"] = "/tmp"
 os.putenv('GST_DEBUG_DUMP_DOT_DIR', '/tmp')
 
 from os.path import sep
-from .media import Media
+from mahnobplayer.mediaplayer.media import Media
 
 import gi
 gi.require_version('Gst', '1.0')
@@ -332,7 +332,7 @@ class MultipleMediaPlayer(BasePlayer):
     #---------------------------------------------------------------------------
     # Initialization
     #---------------------------------------------------------------------------
-    def __init__(self, name=None):
+    def __init__(self, name='MultipleMediaPlayer'):
         super(MultipleMediaPlayer, self).__init__(name)
         self.playlist = dict()
      
@@ -446,7 +446,7 @@ class MultipleMediaPlayer(BasePlayer):
             return self.pipeline.set_state(Gst.State.PLAYING)
 
     def stop(self):
-        self.pipeline.set_state(Gst.State.NULL)
+        res = self.pipeline.set_state(Gst.State.NULL)
         for media in self.playlist.values():
             audiosinkpad = self.bin.get_static_pad('audioghostsink:{}:{}'.format(media.getFilename(), self.name))
             if audiosinkpad:
@@ -454,7 +454,7 @@ class MultipleMediaPlayer(BasePlayer):
             videosinkpad = self.bin.get_static_pad('videoghostsink:{}:{}'.format(media.getFilename(), self.name))
             if videosinkpad:
                 media.media.getVideoGhostPad().unlink(videosinkpad)
-                
+        return res  
     
 class SwitchableMediaPlayer(MultipleMediaPlayer):
     ''' This class implements a player that accept multiple media
