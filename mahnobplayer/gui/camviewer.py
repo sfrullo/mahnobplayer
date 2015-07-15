@@ -89,6 +89,8 @@ class CamViewer(basic.BasicFrame):
         self.quit()
         
     def on_add_video(self):
+        self.__controller.on_stop(self)
+        
         options = {}
         options['parent'] = self
         options['title'] = 'Add Video(s)'

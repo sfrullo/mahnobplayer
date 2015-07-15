@@ -24,19 +24,27 @@ class Controller:
         
     def on_selection(self, notifier, videoframe, selection):
         print('work on_selection')
-        self.player.setMediaXid(selection, videoframe.getXid())
+        if selection == '---':
+            videoframe.winfo_visualsavailable(False)
+        else:
+            self.player.setMediaXid(selection, videoframe.getXid())
         
-    def on_play(self, mediacontrol):
+    def on_play(self, invoker):
+        print(invoker, 'call on_play')
         self.player.play()
     
-    def on_stop(self, mediacontrol):
+    def on_stop(self, invoker):
+        print(invoker, 'call on_stop')
         self.player.stop()
     
-    def on_pause(self, mediacontrol):
-        pass
+    def on_pause(self, invoker):
+        print(invoker, 'call on_pause')
+        self.player.stop()
     
-    def on_rew(self, mediacontrol):
-        pass
+    def on_rew(self, invoker):
+        print(invoker, 'call on_rew')
+        self.player.rew()
     
-    def on_ffw(self, mediacontrol):
-        pass
+    def on_ffw(self, invoker):
+        print(invoker, 'call on_ffw')
+        self.player.ffwd()
