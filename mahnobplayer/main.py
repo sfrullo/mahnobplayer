@@ -11,10 +11,15 @@ import tkinter as tk
 from mahnobplayer.gui.camviewer import CamViewer
 from mahnobplayer.controller import Controller
 
+import logging
+from mahnobplayer import logger
+log = logging.getLogger('main')
+
 if __name__ == '__main__':
     # tk root hook
     root = tk.Tk()
     
+    log.info('started')
     ctr = Controller()
     camview = CamViewer(root, controller=ctr)
     

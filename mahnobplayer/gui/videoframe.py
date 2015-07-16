@@ -44,6 +44,9 @@ class selectableVideoFrame(BasicFrame):
     def getCurrentSelection(self):
         return self.selectionvar.get()
     
+    def SetCurrentSelection(self, value):
+        self.selectionvar.set(value)
+    
     def setVideoFrameWidth(self, width):
         self.__videoframe.setWidth(width)
 
@@ -72,7 +75,6 @@ class selectableVideoFrame(BasicFrame):
     # Callbacks
     #---------------------------------------------------------------------------
     def on_select(self, selection):
-        print(selection, 'video selected')
         # notify the parent that a video was selected
         self.getParent().on_selection(self, selection)
     

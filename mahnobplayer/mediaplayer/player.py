@@ -11,6 +11,9 @@ from gi.repository import GObject, Gst, GstVideo  # @UnresolvedImport
 GObject.threads_init()
 Gst.init(None)
 
+import logging
+log = logging.getLogger('player')
+
 class BasePlayer:
     
     #---------------------------------------------------------------------------
@@ -20,8 +23,7 @@ class BasePlayer:
         def __init__(self, *arg, **kwarg):
             self.arg = arg
             self.kwarg = kwarg
-        def __str__(self):
-            print('Error occurred while loading {} component'.format(self.arg[1]))
+            log.error('Error occurred while loading {} component'.format(self.arg[1]))
     
     
     #---------------------------------------------------------------------------
@@ -128,24 +130,22 @@ class BasePlayer:
     # callback functions
     #---------------------------------------------------------------------------
     def on_message(self, bus, msg):
-        print(bus, msg)
+        log.debug('in on_message :- {}, {}'.format(bus, msg))
         t = msg.type
-        print(t)
         if t == Gst.MessageType.EOS:
-            print(self.name, 'on_eos(): seeking to start of video')
+            log.info(self.name, 'on_eos(): seeking to start of video')
             self.stop()
         elif t == Gst.MessageType.ERROR:
             self.stop()
-            print(self.name, 'on_error():', msg.parse_error())
+            log.info(self.name, 'on_error():', msg.parse_error())
         elif t == Gst.MessageType.STATE_CHANGED:
-            print(self.name, 'state changed:', msg.parse_state_changed())
+            log.info(self.name, 'state changed:', msg.parse_state_changed())
      
     def on_pad_added(self, element, pad):
-        print(pad.get_name(), ' added to ', element.get_name())
+        pass
         
         
     def on_sync_message(self, bus, msg):
-        print('in basic', end=' ')
         pass
             
             
@@ -153,7 +153,7 @@ class BasePlayer:
     # Debug Function
     #---------------------------------------------------------------------------
     def on_debug_activate(self, name):
-        print('do debug image')
+        log.debug('do debug image')
         dotfile = "/tmp/" + name + ".dot"
         pdffile = "/tmp/" + name + ".pdf"
         if os.access(dotfile, os.F_OK):
@@ -164,7 +164,7 @@ class BasePlayer:
         try:
             os.system("dot -Tpdf -o " + pdffile + " " + dotfile)
         except os.error:
-            print("The debug feature requires graphviz (dot) to be installed.")
+            log.debug("The debug feature requires graphviz (dot) to be installed.")
 
 
 class SimplePlayer(BasePlayer):
@@ -197,15 +197,15 @@ class SimplePlayer(BasePlayer):
     #---------------------------------------------------------------------------
     def on_sync_message(self, bus, msg):
         if msg.get_structure().get_name() == 'prepare-window-handle':
-            print('prepare-window-handle')
+            log.info('prepare-window-handle')
             self.imagesink = msg.src
-            print(self.imagesink)
+            log.debug('{}'.format(self.imagesink))
             self.imagesink.set_property('force-aspect-ratio', True)
             self.imagesink.set_window_handle(self.getXid())
 
 
     def on_pad_linkded(self, pad, src):
-        print(src.get_name(), ' linked to ' , pad.get_name())
+        log.info('{} linked to {}'.format(src.get_name(),  pad.get_name()))
         if pad.get_name().startswith('video'):
             self.videoghostsink.set_target(self.videoconvert.get_static_pad('sink'))
         else:
@@ -227,7 +227,7 @@ class SimplePlayer(BasePlayer):
     # control functions
     #---------------------------------------------------------------------------
     def play(self):
-        print('{} already in playing state'.format(self.name) 
+        log.info('{} already in playing state'.format(self.name) 
               if self.pipeline.current_state is Gst.State.PLAYING 
               else 'set {} to playing state'.format(self.name))
         if not self.pipeline.current_state is Gst.State.PLAYING:
@@ -238,7 +238,7 @@ class SimplePlayer(BasePlayer):
             return self.pipeline.set_state(Gst.State.PLAYING)
 
     def stop(self):
-        print('{} is not playing'.format(self.name) 
+        log.info('{} is not playing'.format(self.name) 
               if self.pipeline.current_state is Gst.State.NULL 
               else 'set {} to null state'.format(self.name))
         self.pipeline.set_state(Gst.State.NULL)
@@ -255,7 +255,7 @@ class SimplePlayer(BasePlayer):
         return self.xid
 
     def setXid(self, value):
-        print('Set new xid value:\nPrevious:{} -> New:{}'.format(self.xid, value))
+        log.info('Set new xid value:\nPrevious:{} -> New:{}'.format(self.xid, value))
         self.xid = value
             
     def getMedia(self):
@@ -269,9 +269,7 @@ class SimplePlayer(BasePlayer):
         if hasVideo: 
             self.videoconvert, self.videosink = self.addMediaComponent('video', idname=name)
         
-        print('Set new Media: {} '.format(filepath),
-              'with audio ' if hasAudio else 'with no audio ',
-              'with video' if hasVideo else 'with no video')
+        log.info('Set new Media: {} '.format(filepath))
         self.media = Media(filepath, hasAudio, hasVideo)
         self.pipeline.add(self.media.getBin())
 
@@ -304,7 +302,7 @@ class MultipleMediaPlayer(BasePlayer):
         def setXid(self, value):
             self.__oldxid = self.xid
             self.xid = value
-
+                
         def getImagesink(self):
             return self.imagesink
 
@@ -356,7 +354,7 @@ class MultipleMediaPlayer(BasePlayer):
         
         media = Media(path, hasAudio, hasVideo)
         self.playlist[filename] = MultipleMediaPlayer.PlaylistElement(media, videocomponent, audiocomponent)
-        print(path, ' added to playlist of ', self.name)
+        log.info('{} added to playlist of {}'.format(path,  self.name))
         self.pipeline.add(media.getBin())
     
     def removeMediaFromPlaylist(self, media):
@@ -368,7 +366,7 @@ class MultipleMediaPlayer(BasePlayer):
             self.playlist[name].destroy()
             self.playlist.pop(name)
         else:
-            print(name, ' not in playlist of ', self.name)
+            log.info('{} not in playlist of '.format(name, self.name))
             
     def getMediaXid(self, media):
         name = media.split(sep)[-1]
@@ -376,60 +374,53 @@ class MultipleMediaPlayer(BasePlayer):
             xid = self.playlist[name].getXid()
             return xid
         except AttributeError as e:
-            print(e)
+            log.error(e.msg(), exe_info=True)
             return
         
     def setMediaXid(self, media, xid):
         name = media.split(sep)[-1]
         try:
             self.playlist[name].setXid(xid)
+            log.info('set xid: {} for media: {}'.format(xid,  name))
             for m in self.playlist.values():
-                m.getImagesink().prepare_window_handle()
+                if m.getImagesink():
+                    m.getImagesink().prepare_window_handle()
         except AttributeError as e:
-            print(e)
+            log.error(e.msg(), exe_info=True)
             return
     
+    def getMediaFromXid(self, xid):
+        ''' return the element in playlist associated with the specified xid '''
+        for m in self.playlist.values():
+            if m.getXid() == xid:
+                return m
     
     #---------------------------------------------------------------------------
     # Callbacks
     #---------------------------------------------------------------------------
     def on_pad_linkded(self, pad, src):
-        print(src.get_name(), ' linked to ', pad.get_name())
+        log.info('{} linked to {}'.format(src.get_name(), pad.get_name()))
         sinkpad, filename, parent = pad.get_name().split(':')
         if sinkpad.startswith('video'):
             convertname = 'videoconvert:' + filename + ':' + parent
         else:
             convertname = 'audioconvert:' + filename + ':' + parent
         convertpad = self.bin.get_by_name(convertname).get_static_pad('sink')
-        pad.set_target(convertpad)
-        print(pad.get_name(), ' linked to ', convertname)
+        if pad.set_target(convertpad):
+            log.info('{} linked to {}'.format(pad.get_name(), convertname))
         
     def on_sync_message(self, bus, msg):
-        print('in multiplayer', end=' ')
         if msg.get_structure().get_name() == 'prepare-window-handle':
             imagesink = msg.src
             medianame = imagesink.get_name().split(':')[1]
             if self.playlist[medianame].getXid():
-                print('prepare-window-handle for:', medianame)
+                log.info('prepare-window-handle for: {}'.format(medianame))
                 imagesink.set_property('force-aspect-ratio', True)
                 imagesink.set_window_handle(self.playlist[medianame].getXid())
+                self.playlist[medianame].setImagesink(imagesink)       
             else:
-                print(medianame, 'doesn\'t have an associated xid.')
-            self.playlist[medianame].setImagesink(imagesink)
-    
-    def on_message(self, bus, msg):
-        print(bus, msg)
-        t = msg.type
-        print(t)
-        if t == Gst.MessageType.EOS:
-            print(self.name, 'on_eos(): seeking to start of video')
-            self.stop()
-        elif t == Gst.MessageType.ERROR:
-            self.stop()
-            print(self.name, 'on_error():', msg.parse_error())
-        elif t == Gst.MessageType.STATE_CHANGED:
-            print(self.name, 'state changed:', msg.parse_state_changed())
-       
+                log.info('{} doesn\'t have an associated xid.'.format(medianame))
+                
                 
     #---------------------------------------------------------------------------
     # control functions

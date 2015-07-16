@@ -16,6 +16,7 @@ class MediaControl(BasicFrame):
     frame with a series of button which associated callback invoke 
     the main controller (sort of MVC) methods for media control '''
     
+    __name__ = 'MediaControl'
     
     def __init__(self, parent, controller,*args, **kwarg):
         '''

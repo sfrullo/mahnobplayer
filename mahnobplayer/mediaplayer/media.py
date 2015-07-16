@@ -17,7 +17,8 @@ class Media:
 
     def on_pad_added(self, decodebin, pad):
         if pad.get_name().startswith('ghost'):
-            print(pad.get_name(), ' added to ', decodebin.get_name())
+            #print(pad.get_name(), ' added to ', decodebin.get_name())
+            pass
         else: 
             padcaps = pad.query_caps(None)
             structure = padcaps.to_string()
