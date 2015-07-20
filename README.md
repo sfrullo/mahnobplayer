@@ -19,12 +19,12 @@ It provides multiple views:
 MahnobPlayer tries to mantain cross-platform compatibily (not tested yet) using as much standard library modules as possible.
 At the current stage, the project has the following dependencies:
 
-- System Depencencies:
-  - [GStreamer](http://gstreamer.freedesktop.org/)
-  - [Python3.x](https://www.python.org/downloads/)
-- Python Depencencies:
-  - [Pillow 2.8.1](https://pypi.python.org/pypi/Pillow/2.9.0) : `pip install Pillow`
-  - [numpy](http://www.numpy.org/) : `pip install numpy`
+###### System Depencencies:
+  *  [GStreamer](http://gstreamer.freedesktop.org/)
+  *  [Python3.x](https://www.python.org/downloads/)
+###### Python Depencencies:
+  *  [Pillow 2.8.1](https://pypi.python.org/pypi/Pillow/2.9.0) : `pip install Pillow`
+  *  [numpy](http://www.numpy.org/) : `pip install numpy`
 
 
 ## How to use
