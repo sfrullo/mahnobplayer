@@ -1,7 +1,7 @@
 # MahnobPlayer
 
 **MahnobPlayer** is a mediaplayer designed to easily work with [Mahnob Databases](http://mahnob-db.eu/hci-tagging).
-It is designed in [Python3](https://www.python.org/downloads/) and it made large use of *gst-python* bindings to exploit [GStreamer](http://gstreamer.freedesktop.org/) powerfull multimedia framework functionalities.
+It is designed in [Python3](https://www.python.org/downloads/) and it makes large use of *gst-python* bindings to exploit [GStreamer](http://gstreamer.freedesktop.org/) multimedia framework's powerful functionalities.
 
 It provides multiple views:
 
