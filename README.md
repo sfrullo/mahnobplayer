@@ -16,7 +16,7 @@ It provides multiple views:
 
 #### Dependencies
 
-MahnobPlayer use as much standard library modules as possible to try to mantain cross-platform compatibily (not tested yet).
+MahnobPlayer tries to mantain cross-platform compatibily (not tested yet) using as much standard library modules as possible.
 At the current stage, the project has the following dependencies:
 
 - System Depencencies:
